@@ -1,8 +1,5 @@
 import * as test from 'tape'
-import { Observable } from 'rxjs/Observable'
-import 'rxjs/add/observable/of'
-import 'rxjs/add/observable/empty'
-import 'rxjs/add/observable/never'
+import { Observable, of, EMPTY, NEVER } from 'rxjs'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom/server'
 
@@ -26,10 +23,6 @@ function testRender(t: test.Test, actual: JSX.Element | null, expected: string, 
   t.is(actual && ReactDOM.renderToStaticMarkup(actual), expected, desc)
 }
 
-function fromConst<T>(value: T) {
-  return Observable.of(value)
-}
-
 test('react', t => {
   testRender(t,
     <F.span>test</F.span>,
@@ -38,25 +31,25 @@ test('react', t => {
   )
 
   testRender(t,
-    <F.span>{fromConst('test1')}</F.span>,
+    <F.span>{of('test1')}</F.span>,
     '<span>test1</span>',
     'Render F element with oservable'
   )
 
   testRender(t,
-    <F.span style={fromConst({ color: 'red' })}></F.span>,
+    <F.span style={of({ color: 'red' })}></F.span>,
     '<span style="color:red"></span>',
     'Render F element with observable in style'
   )
 
   testRender(t,
-    <F.span style={fromConst({ color: 'red' })}>{fromConst('test')}</F.span>,
+    <F.span style={of({ color: 'red' })}>{of('test')}</F.span>,
     '<span style="color:red">test</span>',
     'Render F element with 2 observables'
   )
 
   testRender(t,
-    <F.span>{Observable.of(0)}</F.span>,
+    <F.span>{of(0)}</F.span>,
     '<span>0</span>',
     'render single Observable.of(0)'
   )
@@ -92,39 +85,39 @@ test('react', t => {
 
     testWarning(
       'single empty',
-      () => <F.span>{Observable.empty()}</F.span>
+      () => <F.span>{EMPTY}</F.span>
     )
 
     testWarning(
       'multiple empty',
-      () => <F.span className={Observable.never()}>{Observable.empty()}</F.span>
+      () => <F.span className={NEVER}>{EMPTY}</F.span>
     )
 
     testWarning(
       'empty and non-empty',
-      () => <F.span style={fromConst({ color: 'red' })}>{Observable.empty()}</F.span>
+      () => <F.span style={of({ color: 'red' })}>{EMPTY}</F.span>
     )
 
     testWarning(
       'single never',
-      () => <F.span className={Observable.never()}></F.span>
+      () => <F.span className={NEVER}></F.span>
     )
 
     testWarning(
       'multiple never',
-      () => <F.span className={Observable.never()} style={Observable.never()}></F.span>
+      () => <F.span className={NEVER} style={NEVER}></F.span>
     )
 
     testWarning(
       'mixed never and empty',
-      () => <F.span className={Observable.empty()} style={Observable.never()}></F.span>
+      () => <F.span className={EMPTY} style={NEVER}></F.span>
     )
 
     t.end()
   })
 
   testRender(t,
-    <F.div onClick={() => { /* no-op */ }} style={{ display: 'block', color: fromConst('red') }}>
+    <F.div onClick={() => { /* no-op */ }} style={{ display: 'block', color: of('red') }}>
       <F.span>Hello</F.span>
     </F.div>,
     '<div style="display:block;color:red"><span>Hello</span></div>',
@@ -140,13 +133,13 @@ test('react', t => {
   )
 
   testRender(t,
-    <LiftedComp test={fromConst('hi')} />,
+    <LiftedComp test={of('hi')} />,
     '<div>hi</div>',
     'lift(Comp) with observable constant'
   )
 
   testRender(t,
-    <LiftedComp test={fromConst('hi')} />,
+    <LiftedComp test={of('hi')} />,
     '<div>hi</div>',
     'lifted component with observable constant'
   )

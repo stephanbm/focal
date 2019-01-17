@@ -1,6 +1,6 @@
 // tslint:disable no-unnecessary-local-variable
 import * as test from 'tape'
-import 'rxjs/add/operator/merge'
+import { merge } from 'rxjs'
 import { Atom, Lens, ReadOnlyAtom } from '../src'
 import { structEq } from '../src/utils'
 
@@ -559,7 +559,7 @@ test('atom', t => {
         )
       }
 
-      const test = a4.merge(a5, a6)
+      const test = merge(a4, a5, a6)
       testCalls(0, 0, 0, 0, 0, 0, 'no calls initially')
 
       const observations: string[] = []
